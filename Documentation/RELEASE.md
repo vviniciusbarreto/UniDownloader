@@ -2,7 +2,7 @@
 
 1. Run `./Scripts/release.sh VERSION BUILD_NUMBER`.
 2. Publish the ZIP and DMG from `ReleaseAssets/VERSION/` in a `vVERSION` GitHub Release.
-3. Commit the generated `appcast.xml` to the YTDLPGlass repository only.
+3. Commit the generated `appcast.xml` to the UniDownloader repository only.
 4. Update `Casks/ytdlp-glass.rb` in `vviniciusbarreto/homebrew-tap` with the release version and ZIP SHA-256.
 5. Retain `LICENSE-ytdlp.txt` and `Documentation/THIRD_PARTY_LICENSES.txt` in every distribution.
 

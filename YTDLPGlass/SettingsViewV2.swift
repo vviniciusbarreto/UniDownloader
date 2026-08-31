@@ -6,18 +6,18 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Section("YTDLP Glass updates") {
+            Section("UniDownloader updates") {
                 Toggle("Automatically check for app updates", isOn: Binding(get: { updates.automaticallyChecksForUpdates }, set: { updates.automaticallyChecksForUpdates = $0 }))
                 Toggle("Automatically download app updates", isOn: Binding(get: { updates.automaticallyDownloadsUpdates }, set: { updates.automaticallyDownloadsUpdates = $0 }))
                     .disabled(!updates.automaticallyChecksForUpdates)
                 Button("Check for App Update…") { updates.checkForUpdates() }
-                Text("App updates are signed and delivered from the separate YTDLPGlass GitHub repository through Sparkle.").foregroundStyle(.secondary)
+                Text("Each launch checks for a signed update and shows its release notes before you install. With automatic downloads enabled, the ready-to-install prompt appears as soon as Sparkle has the update.").foregroundStyle(.secondary)
             }
 
             Section("Quick access") {
                 LabeledContent("Menu bar icon", value: "Always available")
-                Toggle("Open YTDLP Glass at login", isOn: $downloads.launchAtLogin)
-                Text("Drag a browser link onto the menu bar drop zone to download it immediately with your current options.").foregroundStyle(.secondary)
+                Toggle("Open UniDownloader at login", isOn: $downloads.launchAtLogin)
+                Text("Drag a browser link directly onto the UniDownloader arrow in the menu bar. Its drop zone opens automatically and uses your current format and folder.").foregroundStyle(.secondary)
             }
 
             Section("Saved download folders") {

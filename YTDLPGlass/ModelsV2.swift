@@ -10,9 +10,11 @@ enum DownloadKind: String, CaseIterable, Identifiable, Codable {
 }
 
 enum VideoCompatibility: String, CaseIterable, Identifiable {
-    case mac = "Mac (MP4)"
-    case best = "Best quality"
-    case original = "Original format"
+    case h264MP4 = "H.264 MP4"
+    case h265MP4 = "H.265 HEVC MP4"
+    case h264MOV = "Apple MOV (H.264)"
+    case best = "Best quality (MKV)"
+    case original = "Original source format"
     var id: String { rawValue }
 }
 
@@ -100,7 +102,7 @@ final class DownloadViewModel: ObservableObject {
     @Published var quality = "Best" {
         didSet { UserDefaults.standard.set(quality, forKey: "videoQuality") }
     }
-    @Published var videoCompatibility: VideoCompatibility = .mac {
+    @Published var videoCompatibility: VideoCompatibility = .h264MP4 {
         didSet { UserDefaults.standard.set(videoCompatibility.rawValue, forKey: "videoCompatibility") }
     }
     @Published var includeSubtitles = false
@@ -147,7 +149,7 @@ final class DownloadViewModel: ObservableObject {
         ffmpegPath = Self.preferredFFmpegPath(stored: storedFFmpeg)
         kind = DownloadKind(rawValue: UserDefaults.standard.string(forKey: "downloadKind") ?? "") ?? .video
         quality = UserDefaults.standard.string(forKey: "videoQuality") ?? "Best"
-        videoCompatibility = VideoCompatibility(rawValue: UserDefaults.standard.string(forKey: "videoCompatibility") ?? "") ?? .mac
+        videoCompatibility = VideoCompatibility(rawValue: UserDefaults.standard.string(forKey: "videoCompatibility") ?? "") ?? .h264MP4
         cookieBrowser = CookieBrowser(rawValue: UserDefaults.standard.string(forKey: "cookieBrowser") ?? "") ?? .none
         if let data = UserDefaults.standard.data(forKey: "favoriteFolders"), let decoded = try? JSONDecoder().decode([SavedFolder].self, from: data) {
             favoriteFolders = decoded
@@ -199,11 +201,12 @@ final class DownloadViewModel: ObservableObject {
 
     func addDownload() { enqueue(url) }
 
-    func enqueue(_ rawURL: String) {
+    @discardableResult
+    func enqueue(_ rawURL: String) -> Bool {
         let trimmed = rawURL.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let parsed = URL(string: trimmed), let scheme = parsed.scheme, ["http", "https"].contains(scheme.lowercased()) else {
             statusMessage = "Enter a valid http(s) URL first."
-            return
+            return false
         }
         let job = DownloadJob(url: trimmed, kind: kind, destinationPath: outputDirectory.path)
         jobs.insert(job, at: 0)
@@ -211,6 +214,7 @@ final class DownloadViewModel: ObservableObject {
         url = ""
         statusMessage = "Added to download queue"
         Task { await processQueue() }
+        return true
     }
 
     func pasteAndDownload() {
@@ -310,10 +314,20 @@ final class DownloadViewModel: ObservableObject {
             let height = quality == "Best" ? "" : "[height<=\(quality)]"
             if hasFFmpeg {
                 switch videoCompatibility {
-                case .mac:
+                case .h264MP4:
                     arguments += [
                         "-f", "bv*\(height)[vcodec^=avc1]+ba[acodec^=mp4a]/bv*\(height)+ba/b\(height)",
                         "--merge-output-format", "mp4", "--remux-video", "mp4"
+                    ]
+                case .h265MP4:
+                    arguments += [
+                        "-f", "bv*\(height)[vcodec^=hev1]+ba[acodec^=mp4a]/bv*\(height)[vcodec^=hvc1]+ba[acodec^=mp4a]/bv*\(height)+ba/b\(height)",
+                        "--merge-output-format", "mp4", "--remux-video", "mp4"
+                    ]
+                case .h264MOV:
+                    arguments += [
+                        "-f", "bv*\(height)[vcodec^=avc1]+ba[acodec^=mp4a]/bv*\(height)+ba/b\(height)",
+                        "--merge-output-format", "mov", "--remux-video", "mov"
                     ]
                 case .best:
                     arguments += ["-f", "bv*\(height)+ba/b\(height)", "--merge-output-format", "mkv"]
@@ -324,7 +338,8 @@ final class DownloadViewModel: ObservableObject {
         } else if audioFormat == "Best available" {
             arguments += ["-f", "bestaudio/best"]
         } else if hasFFmpeg {
-            arguments += ["-x", "--audio-format", audioFormat.lowercased(), "--audio-quality", "0"]
+            let audioExtension = ["MP3 (.mp3)": "mp3", "M4A (.m4a)": "m4a", "Opus (.opus)": "opus", "WAV (.wav)": "wav"][audioFormat] ?? "mp3"
+            arguments += ["-x", "--audio-format", audioExtension, "--audio-quality", "0"]
         } else {
             arguments += ["-f", "bestaudio/best"]
         }
@@ -361,7 +376,7 @@ final class DownloadViewModel: ObservableObject {
     private func fetchVerifiedRuntime() async throws -> (version: String, binary: Data) {
         let endpoint = URL(string: "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest")!
         var request = URLRequest(url: endpoint)
-        request.setValue("YTDLPGlass/1.0", forHTTPHeaderField: "User-Agent")
+        request.setValue("UniDownloader/1.0.1", forHTTPHeaderField: "User-Agent")
         let (metadata, response) = try await URLSession.shared.data(for: request)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
         let release = try JSONDecoder().decode(GitHubRelease.self, from: metadata)

@@ -9,9 +9,6 @@ final class UpdateManager: ObservableObject {
 
     private init() {
         controller = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
-        if controller.updater.automaticallyChecksForUpdates {
-            controller.updater.checkForUpdatesInBackground()
-        }
     }
 
     var automaticallyChecksForUpdates: Bool {
@@ -25,4 +22,12 @@ final class UpdateManager: ObservableObject {
     }
 
     func checkForUpdates() { controller.checkForUpdates(nil) }
+
+    func checkForUpdatesAtLaunch() {
+        guard controller.updater.automaticallyChecksForUpdates else { return }
+        // Do not present an error sheet at every launch when the network is
+        // unavailable. Sparkle still presents its native release-notes prompt
+        // when it finds an update, including automatic-download installs.
+        controller.updater.checkForUpdatesInBackground()
+    }
 }

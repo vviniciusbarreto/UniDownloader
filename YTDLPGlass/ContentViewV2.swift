@@ -4,29 +4,43 @@ import UniformTypeIdentifiers
 
 struct ContentView: View {
     @EnvironmentObject private var downloads: DownloadViewModel
+    @EnvironmentObject private var menuBar: MenuBarController
+    @Environment(\.openSettings) private var openSettings
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var body: some View {
         NavigationSplitView {
             VStack(alignment: .leading, spacing: 12) {
-                Label("YTDLP Glass", systemImage: "arrow.down.to.line.compact")
-                    .font(.system(size: 21, weight: .bold, design: .rounded))
+                HStack(spacing: 9) {
+                    Image(systemName: "arrow.down.to.line.compact")
+                    Text("UniDownloader")
+                        .lineLimit(1)
+                        .allowsTightening(true)
+                        .minimumScaleFactor(0.55)
+                        .layoutPriority(1)
+                }
+                .font(.system(size: 17, weight: .bold, design: .rounded))
                 Text("Private media downloads on your Mac")
                     .foregroundStyle(.secondary)
                 Divider()
                 Label("Downloads", systemImage: "tray.full").font(.headline)
-                Label("Menu Bar Drop Zone", systemImage: "menubar.rectangle").foregroundStyle(.secondary)
+                Button { menuBar.showDropZone() } label: {
+                    Label("Menu Bar Drop Zone", systemImage: "menubar.rectangle")
+                }.buttonStyle(.plain).foregroundStyle(.secondary)
                 Spacer()
                 HStack(spacing: 6) {
                     Circle().fill(downloads.isDownloading ? .orange : .green).frame(width: 8, height: 8)
                     Text(downloads.statusMessage).font(.caption).lineLimit(4)
                 }.foregroundStyle(.secondary)
-            }.padding(20)
+            }
+            .padding(20)
+            .navigationSplitViewColumnWidth(min: 190, ideal: 210)
         } detail: {
             VStack(spacing: 0) {
                 QuickOptionsBar()
                 ZStack {
                     LinearGradient(colors: [.cyan.opacity(0.22), .indigo.opacity(0.18), .mint.opacity(0.12)], startPoint: .topLeading, endPoint: .bottomTrailing).ignoresSafeArea()
-                    ScrollView { VStack(spacing: 20) { DownloadComposer(); DownloadQueue() }.padding(28) }
+                    ScrollView { VStack(spacing: 20) { DownloadComposer(); DownloadQueue() }.frame(maxWidth: .infinity).padding(28) }
                 }
             }
             .toolbar {
@@ -34,9 +48,15 @@ struct ContentView: View {
                     Button("Update yt-dlp", systemImage: "arrow.clockwise") { Task { await downloads.updateRuntime() } }
                         .disabled(downloads.isUpdating || downloads.isDownloading)
                 }
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Settings", systemImage: "gearshape") { openSettings() }
+                }
             }
         }
         .navigationSplitViewStyle(.balanced)
+        .sheet(isPresented: Binding(get: { !hasCompletedOnboarding }, set: { if !$0 { hasCompletedOnboarding = true } })) {
+            WelcomeView { hasCompletedOnboarding = true }
+        }
     }
 }
 
@@ -78,7 +98,7 @@ private struct QuickOptionsBar: View {
                 }
             } else {
                 Menu {
-                    ForEach(["Best available", "MP3", "M4A", "Opus", "WAV"], id: \.self) { value in
+                    ForEach(["Best available", "MP3 (.mp3)", "M4A (.m4a)", "Opus (.opus)", "WAV (.wav)"], id: \.self) { value in
                         Button(value) { downloads.audioFormat = value }
                     }
                 } label: {
@@ -170,6 +190,7 @@ private struct DownloadQueue: View {
             }
             if downloads.jobs.isEmpty {
                 ContentUnavailableView("No downloads yet", systemImage: "tray", description: Text("Your recent downloads will appear here."))
+                    .frame(maxWidth: .infinity, minHeight: 260)
             } else {
                 ForEach(downloads.jobs) { job in
                     HStack(spacing: 13) {
@@ -186,19 +207,23 @@ private struct DownloadQueue: View {
                     }.padding(14).background(Color.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 16))
                 }
             }
-        }.padding(22).modifier(LiquidGlassCard(radius: 24))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(22)
+        .modifier(LiquidGlassCard(radius: 24))
     }
 }
 
 struct MenuBarDropView: View {
     @EnvironmentObject private var downloads: DownloadViewModel
+    @EnvironmentObject private var menuBar: MenuBarController
 
     var body: some View {
         VStack(spacing: 14) {
             HStack {
                 Image(systemName: "arrow.down.to.line.compact").font(.title2).foregroundStyle(.cyan)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("YTDLP Glass").font(.headline)
+                    Text("UniDownloader").font(.headline)
                     Text(downloads.statusMessage).font(.caption).foregroundStyle(.secondary).lineLimit(2)
                 }
                 Spacer()
@@ -239,14 +264,14 @@ struct MenuBarDropView: View {
             if provider.canLoadObject(ofClass: NSURL.self) {
                 provider.loadObject(ofClass: NSURL.self) { object, _ in
                     guard let value = object as? URL else { return }
-                    Task { @MainActor in downloads.enqueue(value.absoluteString) }
+                    Task { @MainActor in menuBar.enqueueDroppedURL(value.absoluteString) }
                 }
                 return true
             }
             if provider.canLoadObject(ofClass: NSString.self) {
                 provider.loadObject(ofClass: NSString.self) { object, _ in
                     guard let value = object as? String else { return }
-                    Task { @MainActor in downloads.enqueue(value) }
+                    Task { @MainActor in menuBar.enqueueDroppedURL(value) }
                 }
                 return true
             }
@@ -255,8 +280,38 @@ struct MenuBarDropView: View {
     }
 
     private func openMainWindow() {
+        NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
         NSApp.windows.first(where: { $0.canBecomeMain })?.makeKeyAndOrderFront(nil)
+    }
+}
+
+private struct WelcomeView: View {
+    let finish: () -> Void
+
+    var body: some View {
+        VStack(spacing: 22) {
+            Image(systemName: "arrow.down.to.line.compact")
+                .font(.system(size: 44, weight: .semibold))
+                .foregroundStyle(.blue, .cyan)
+            VStack(spacing: 8) {
+                Text("Welcome to UniDownloader").font(.title.bold())
+                Text("A private, native way to save media on your Mac.")
+                    .foregroundStyle(.secondary)
+            }
+            VStack(alignment: .leading, spacing: 14) {
+                Label("Paste a supported link, choose format and folder, then download.", systemImage: "link")
+                Label("Drag a URL directly onto the menu-bar arrow for an instant drop zone.", systemImage: "menubar.rectangle")
+                Label("Downloads, browser cookies and history stay on your Mac. No analytics or account.", systemImage: "lock.shield")
+                Label("UniDownloader checks its signed app updates on launch and keeps yt-dlp current when enabled.", systemImage: "arrow.triangle.2.circlepath")
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(18)
+            .background(.quaternary, in: RoundedRectangle(cornerRadius: 18))
+            Button("Start downloading", action: finish).buttonStyle(.borderedProminent).controlSize(.large)
+        }
+        .padding(30)
+        .frame(width: 540)
     }
 }
 

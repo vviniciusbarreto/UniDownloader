@@ -1,7 +1,27 @@
 <?xml version="1.0" standalone="yes"?>
 <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
     <channel>
-        <title>YTDLP Glass</title>
+        <title>UniDownloader</title>
+        <item>
+            <title>1.0.1</title>
+            <pubDate>Mon, 31 Aug 2026 20:46:35 -0300</pubDate>
+            <link>https://github.com/vviniciusbarreto/UniDownloader</link>
+            <sparkle:version>2</sparkle:version>
+            <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[# UniDownloader 1.0.1
+
+- Rebranded YTDLP Glass as UniDownloader while retaining the update-compatible bundle identifier for existing users.
+- Replaced the menu-bar scene with a stable native status item, eliminating the macOS Tahoe update loop that could leave the app unresponsive.
+- Drag a browser URL directly over the menu-bar arrow: the drop zone opens automatically and starts the download with the chosen folder and options.
+- Added a green menu-bar progress indicator and a right-click menu with Open, Settings, and Quit.
+- Added a Settings gear in the main toolbar and made the sidebar Drop Zone item functional.
+- Added first-launch welcome guidance covering use, privacy, local data, and updates.
+- App updates now check at launch and Sparkle presents the release notes before installation. Automatic downloads remain available in Settings.
+- Retains bundled Apple Silicon FFmpeg/FFprobe, verified yt-dlp runtime updates, and YouTube/Instagram compatibility safeguards.
+]]></description>
+            <enclosure url="https://github.com/vviniciusbarreto/UniDownloader/releases/download/v1.0.1/UniDownloader-1.0.1-arm64.zip" length="98514477" type="application/octet-stream" sparkle:edSignature="B0LSZyY+Vk7RZGj+dBEphdiVbT/9cYWrNCFECgyihpHjgq9zfTKG3wttwUVVJYPpqt10xLrRFmIElJlkq926Cg=="/>
+        </item>
         <item>
             <title>1.0.0</title>
             <pubDate>Mon, 31 Aug 2026 17:56:03 -0300</pubDate>
