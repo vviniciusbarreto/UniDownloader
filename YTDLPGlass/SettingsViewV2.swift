@@ -15,7 +15,7 @@ struct SettingsView: View {
             }
 
             Section("Quick access") {
-                Toggle("Show YTDLP Glass in the menu bar", isOn: $downloads.showMenuBarIcon)
+                LabeledContent("Menu bar icon", value: "Always available")
                 Toggle("Open YTDLP Glass at login", isOn: $downloads.launchAtLogin)
                 Text("Drag a browser link onto the menu bar drop zone to download it immediately with your current options.").foregroundStyle(.secondary)
             }

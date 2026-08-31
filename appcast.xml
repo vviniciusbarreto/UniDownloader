@@ -14,9 +14,10 @@
 - Native Apple Silicon media downloader with a Tahoe Liquid Glass interface.
 - Fixed quick-options bar, persistent download folders, and menu bar drag-and-drop downloads.
 - Bundled native Apple Silicon FFmpeg/FFprobe plus YouTube and Instagram compatibility improvements.
+- Fixed a macOS 26 scene-update loop so the main window and menu bar remain responsive.
 - Signed automatic app updates through Sparkle and verified yt-dlp engine updates.
 ]]></description>
-            <enclosure url="https://github.com/vviniciusbarreto/YTDLPGlass/releases/download/v1.0.0/YTDLPGlass-1.0.0-arm64.zip" length="98467356" type="application/octet-stream" sparkle:edSignature="kBHt9lMHl3G8y2E1NV4BkmZlLGKMfRT1RrhdMMnIXTENDTMh6okI8lcqVk5lTqH23w3G/H/jMZaawQTpy//rDg=="/>
+            <enclosure url="https://github.com/vviniciusbarreto/YTDLPGlass/releases/download/v1.0.0/YTDLPGlass-1.0.0-arm64.zip" length="98463665" type="application/octet-stream" sparkle:edSignature="sPO3qfAarD4oQGpZYXe8yOF2fdE6K9NNxAoL9oYScwd1Z7QcNzZA18skId9aUMAmxat/y94NGGKj5mLHRyaJAA=="/>
         </item>
     </channel>
 </rss>

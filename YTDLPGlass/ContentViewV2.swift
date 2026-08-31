@@ -49,22 +49,40 @@ private struct QuickOptionsBar: View {
                 .buttonStyle(.borderedProminent).controlSize(.large)
 
             Divider().frame(height: 25)
-            compactPicker("Download", selection: $downloads.kind) {
-                ForEach(DownloadKind.allCases) { Text($0.rawValue).tag($0) }
+            Menu {
+                ForEach(DownloadKind.allCases) { value in
+                    Button { downloads.kind = value } label: {
+                        Label(value.rawValue, systemImage: downloads.kind == value ? "checkmark" : value == .video ? "film" : "waveform")
+                    }
+                }
+            } label: {
+                Text(downloads.kind.rawValue)
             }
 
             if downloads.kind == .video {
-                compactPicker("Quality", selection: $downloads.quality) {
+                Menu {
                     ForEach(["Best", "2160", "1440", "1080", "720", "480"], id: \.self) { value in
-                        Text(value == "Best" ? "Best" : "\(value)p").tag(value)
+                        Button(value == "Best" ? "Best" : "\(value)p") { downloads.quality = value }
                     }
+                } label: {
+                    Text(downloads.quality == "Best" ? "Best" : "\(downloads.quality)p")
                 }
-                compactPicker("For", selection: $downloads.videoCompatibility) {
-                    ForEach(VideoCompatibility.allCases) { Text($0.rawValue).tag($0) }
+                Menu {
+                    ForEach(VideoCompatibility.allCases) { value in
+                        Button { downloads.videoCompatibility = value } label: {
+                            Label(value.rawValue, systemImage: downloads.videoCompatibility == value ? "checkmark" : "film.stack")
+                        }
+                    }
+                } label: {
+                    Text(downloads.videoCompatibility.rawValue)
                 }
             } else {
-                compactPicker("Format", selection: $downloads.audioFormat) {
-                    ForEach(["Best available", "MP3", "M4A", "Opus", "WAV"], id: \.self) { Text($0).tag($0) }
+                Menu {
+                    ForEach(["Best available", "MP3", "M4A", "Opus", "WAV"], id: \.self) { value in
+                        Button(value) { downloads.audioFormat = value }
+                    }
+                } label: {
+                    Text(downloads.audioFormat)
                 }
             }
 
@@ -82,17 +100,8 @@ private struct QuickOptionsBar: View {
             }.menuStyle(.button).fixedSize()
         }
         .padding(.horizontal, 14).padding(.vertical, 10)
-        .background(.bar)
+        .background(Color(nsColor: .windowBackgroundColor))
         .overlay(alignment: .bottom) { Divider() }
-    }
-
-    private func compactPicker<Selection: Hashable, Content: View>(
-        _ title: String,
-        selection: Binding<Selection>,
-        @ViewBuilder content: () -> Content
-    ) -> some View {
-        Picker(title, selection: selection, content: content)
-            .labelsHidden().pickerStyle(.menu).fixedSize()
     }
 }
 
@@ -129,7 +138,7 @@ private struct DownloadComposer: View {
                 Text("Current folder: \(downloads.outputDirectory.path)").font(.caption).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
                 Spacer()
                 Button("Show in Finder", systemImage: "finder") { downloads.revealDestination() }
-            }.padding(11).background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
+            }.padding(11).background(Color.white.opacity(0.055), in: RoundedRectangle(cornerRadius: 12))
 
             DisclosureGroup("Advanced yt-dlp arguments") {
                 TextField("Example: --write-thumbnail", text: $downloads.advancedArguments).textFieldStyle(.roundedBorder).font(.body.monospaced())
@@ -174,7 +183,7 @@ private struct DownloadQueue: View {
                         }
                         Spacer()
                         Text(job.state.title).font(.caption.weight(.medium)).foregroundStyle(.secondary)
-                    }.padding(14).background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+                    }.padding(14).background(Color.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 16))
                 }
             }
         }.padding(22).modifier(LiquidGlassCard(radius: 24))
@@ -254,8 +263,12 @@ struct MenuBarDropView: View {
 private struct LiquidGlassCard: ViewModifier {
     let radius: CGFloat
 
-    @ViewBuilder func body(content: Content) -> some View {
-        if #available(macOS 26.0, *) { content.glassEffect(.regular, in: .rect(cornerRadius: radius)) }
-        else { content.background(.regularMaterial, in: RoundedRectangle(cornerRadius: radius, style: .continuous)) }
+    func body(content: Content) -> some View {
+        // Applying Tahoe's live glassEffect to large, scrolling containers can
+        // create a recursive backdrop update on macOS 26. Material preserves
+        // the native glass appearance without blocking the main thread.
+        content
+            .background(Color(nsColor: .controlBackgroundColor).opacity(0.94), in: RoundedRectangle(cornerRadius: radius, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).stroke(.white.opacity(0.16), lineWidth: 1))
     }
 }

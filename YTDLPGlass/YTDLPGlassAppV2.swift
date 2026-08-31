@@ -21,7 +21,7 @@ struct YTDLPGlassApp: App {
             }
         }
 
-        MenuBarExtra("YTDLP Glass", systemImage: "arrow.down.to.line.compact", isInserted: $downloads.showMenuBarIcon) {
+        MenuBarExtra("YTDLP Glass", systemImage: "arrow.down.to.line.compact") {
             MenuBarDropView().environmentObject(downloads)
         }
         .menuBarExtraStyle(.window)
