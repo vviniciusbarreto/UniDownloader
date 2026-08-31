@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+    <key>CFBundleDisplayName</key><string>YTDLP Glass</string>
+    <key>CFBundleIdentifier</key><string>com.vviniciusbarreto.ytdlpglass</string>
+    <key>CFBundleName</key><string>YTDLP Glass</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleShortVersionString</key><string>$(MARKETING_VERSION)</string>
+    <key>CFBundleVersion</key><string>$(CURRENT_PROJECT_VERSION)</string>
+    <key>LSMinimumSystemVersion</key><string>15.0</string>
+    <key>LSApplicationCategoryType</key><string>public.app-category.utilities</string>
+    <key>CFBundleIconName</key><string>AppIcon</string>
+    <key>NSHumanReadableCopyright</key><string>Copyright © 2026 Vinicius Barreto. Private, local-first utility.</string>
+    <key>NSHighResolutionCapable</key><true/>
+    <key>SUFeedURL</key><string>https://raw.githubusercontent.com/vviniciusbarreto/YTDLPGlass/main/appcast.xml</string>
+    <key>SUPublicEDKey</key><string>6Zg0NViP48Pg9GHFTppD7KynpEdupukR3s+rg3SjjTA=</string>
+    <key>SUEnableAutomaticChecks</key><true/>
+    <key>SUAllowsAutomaticUpdates</key><true/>
+    <key>SUScheduledCheckInterval</key><integer>86400</integer>
+</dict></plist>

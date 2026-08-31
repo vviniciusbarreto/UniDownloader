@@ -1,0 +1,14 @@
+build/
+build-v2/
+build-release/
+DerivedData/
+.DS_Store
+*.xcuserstate
+xcuserdata/
+Vendor/
+Releases/
+ReleaseAssets/
+YTDLP Glass.app/
+*.dmg
+*.zip
+Resources/Assets.xcassets/AppIcon.appiconset/.png
