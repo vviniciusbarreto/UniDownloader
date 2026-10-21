@@ -1,6 +1,6 @@
 # Release path
 
-1. Update `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in `YTDLPGlass.xcodeproj` and the `VERSION`/`BUILD_NUMBER` defaults in `Scripts/build-release.sh`. The yt-dlp updater reads its User-Agent version from the bundle, so it needs no manual change.
+1. Update `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in `YTDLPGlass.xcodeproj` (Debug and Release). `Scripts/build-release.sh` reads its defaults from there, and the yt-dlp updater reads its User-Agent version from the bundle, so neither needs a manual change.
 2. Write the release notes to `ReleaseAssets/VERSION/UniDownloader-VERSION-arm64.md`. `Scripts/release.sh` stops before building when this file is missing.
 3. Run `./Scripts/release.sh VERSION BUILD_NUMBER`. The build stops if the executable is not arm64-only.
 4. Publish the ZIP and DMG from `ReleaseAssets/VERSION/` in a `vVERSION` GitHub Release.

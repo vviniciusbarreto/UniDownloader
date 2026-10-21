@@ -2,8 +2,16 @@
 set -euo pipefail
 
 project_root="$(cd "$(dirname "$0")/.." && pwd)"
-version="${VERSION:-1.0.1}"
-build_number="${BUILD_NUMBER:-2}"
+# The Xcode project is the single source for the version; VERSION and
+# BUILD_NUMBER override it (release.sh passes both).
+project_file="$project_root/YTDLPGlass.xcodeproj/project.pbxproj"
+project_setting() { sed -n "s/.* $1 = \([^;]*\);.*/\1/p" "$project_file" | head -n 1; }
+version="${VERSION:-$(project_setting MARKETING_VERSION)}"
+build_number="${BUILD_NUMBER:-$(project_setting CURRENT_PROJECT_VERSION)}"
+if [[ -z "$version" || -z "$build_number" ]]; then
+  echo "Could not read MARKETING_VERSION/CURRENT_PROJECT_VERSION from $project_file" >&2
+  exit 1
+fi
 derived="$project_root/build-release"
 app="$derived/Build/Products/Release/UniDownloader.app"
 release_dir="$project_root/ReleaseAssets/$version"
