@@ -376,7 +376,7 @@ final class DownloadViewModel: ObservableObject {
     private func fetchVerifiedRuntime() async throws -> (version: String, binary: Data) {
         let endpoint = URL(string: "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest")!
         var request = URLRequest(url: endpoint)
-        request.setValue("UniDownloader/1.0.1", forHTTPHeaderField: "User-Agent")
+        request.setValue("UniDownloader/\(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "unknown")", forHTTPHeaderField: "User-Agent")
         let (metadata, response) = try await URLSession.shared.data(for: request)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
         let release = try JSONDecoder().decode(GitHubRelease.self, from: metadata)
@@ -452,7 +452,11 @@ final class DownloadViewModel: ObservableObject {
 
     private func friendlyError(_ log: String) -> String {
         let lower = log.lowercased()
-        if lower.contains("sign in") || lower.contains("login required") || lower.contains("cookies") { return "This source requires a signed-in session. Choose Safari, Chrome, or Firefox cookies in Settings, then try again." }
+        // Browser cookie read failures mention cookies too, but need a different fix than a missing sign-in.
+        let cookieReadFailures = ["could not copy", "cookie database", "failed to decrypt", "keyring", "operation not permitted", "permission denied"]
+        if lower.contains("cookie"), cookieReadFailures.contains(where: { lower.contains($0) }) { return "UniDownloader could not read cookies from the selected browser. Allow access when macOS asks (Safari requires Full Disk Access in System Settings > Privacy & Security), or choose another browser in Settings." }
+        let signInRequired = ["sign in", "login required", "registered users", "--cookies-from-browser", "account authentication"]
+        if signInRequired.contains(where: { lower.contains($0) }) { return "This source requires a signed-in session. Choose Safari, Chrome, or Firefox cookies in Settings, then try again." }
         if lower.contains("ffmpeg") { return "FFmpeg is required for this format. It was not found or could not be executed." }
         if lower.contains("unsupported url") { return "This URL is not currently supported by yt-dlp." }
         return log.split(whereSeparator: \.isNewline).suffix(4).joined(separator: "\n")

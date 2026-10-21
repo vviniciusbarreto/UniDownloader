@@ -10,11 +10,18 @@ release_dir="$project_root/ReleaseAssets/$version"
 
 xcodebuild -project "$project_root/YTDLPGlass.xcodeproj" \
   -scheme "UniDownloader" -configuration Release -derivedDataPath "$derived" \
-  MARKETING_VERSION="$version" CURRENT_PROJECT_VERSION="$build_number" \
+  ARCHS=arm64 MARKETING_VERSION="$version" CURRENT_PROJECT_VERSION="$build_number" \
   CODE_SIGNING_ALLOWED=NO build
 
 codesign --force --deep --sign - "$app"
 codesign --verify --deep --strict --verbose=2 "$app"
+
+# The cask and bundled FFmpeg require Apple Silicon. Refuse to package anything else.
+app_archs="$(lipo -archs "$app/Contents/MacOS/UniDownloader")"
+if [[ "$app_archs" != "arm64" ]]; then
+  echo "Expected an arm64-only executable, found: $app_archs" >&2
+  exit 1
+fi
 
 mkdir -p "$release_dir"
 ditto "$app" "$release_dir/UniDownloader.app"
