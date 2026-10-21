@@ -4,7 +4,7 @@ cask "uni-downloader" do
 
   url "https://github.com/vviniciusbarreto/UniDownloader/releases/download/v#{version}/UniDownloader-#{version}-arm64.zip"
   name "UniDownloader"
-  desc "Private native macOS interface for yt-dlp with direct menu bar URL drops"
+  desc "Private native interface for yt-dlp with direct menu bar URL drops"
   homepage "https://github.com/vviniciusbarreto/UniDownloader"
 
   depends_on arch: :arm64

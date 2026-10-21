@@ -9,17 +9,15 @@ archive="$release_dir/UniDownloader-$version-arm64.zip"
 notes="$release_dir/UniDownloader-$version-arm64.md"
 appcast_source="$project_root/Releases/$version"
 
-VERSION="$version" BUILD_NUMBER="$build_number" "$project_root/Scripts/build-release.sh"
-
+# Release notes ship inside the Sparkle appcast and the GitHub Release, so a
+# version without its own notes must not be published with generic text.
 if [[ ! -f "$notes" ]]; then
-  printf '%s\n' \
-    "# UniDownloader $version" "" \
-    "- Native Apple Silicon media downloader with a Tahoe Liquid Glass interface." \
-    "- Persistent download folders and menu bar drag-and-drop downloads." \
-    "- YouTube and Instagram compatibility improvements with automatic FFmpeg/JavaScript runtime detection." \
-    "- Signed automatic app updates through Sparkle and verified yt-dlp engine updates." \
-    > "$notes"
+  echo "Missing release notes: $notes" >&2
+  echo "Write the notes for $version there, then run this script again." >&2
+  exit 1
 fi
+
+VERSION="$version" BUILD_NUMBER="$build_number" "$project_root/Scripts/build-release.sh"
 
 mkdir -p "$appcast_source"
 ditto "$archive" "$appcast_source/UniDownloader-$version-arm64.zip"
