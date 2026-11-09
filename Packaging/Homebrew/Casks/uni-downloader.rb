@@ -1,6 +1,6 @@
 cask "uni-downloader" do
-  version "1.0.1"
-  sha256 "67c183e07e5e9d68fc2a61b066673cf9c24ddc9db3b1c711eb26c069915a3b72"
+  version "1.1.0"
+  sha256 "a2de5b3ac60cbe65fbd1632593cdc75281f8a44e7fa063cf8403ce6b0be69fde"
 
   url "https://github.com/vviniciusbarreto/UniDownloader/releases/download/v#{version}/UniDownloader-#{version}-arm64.zip"
   name "UniDownloader"
