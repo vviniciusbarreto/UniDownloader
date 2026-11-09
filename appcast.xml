@@ -3,6 +3,23 @@
     <channel>
         <title>UniDownloader</title>
         <item>
+            <title>1.1.0</title>
+            <pubDate>Mon, 09 Nov 2026 00:34:45 -0300</pubDate>
+            <link>https://github.com/vviniciusbarreto/UniDownloader</link>
+            <sparkle:version>3</sparkle:version>
+            <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[# UniDownloader 1.1.0
+
+- New default video format, "Best for Mac (MP4)": the highest resolution available, preferring H.264, then HEVC, then AV1 at that resolution. Sources that only offer VP9 are converted to HEVC on the GPU, so every file opens in QuickTime, Finder and DaVinci Resolve.
+- MP4 and MOV downloads now tag HEVC as hvc1 and convert audio that is not AAC, MP3 or ALAC to AAC 256 kbps.
+- New default audio format, "Apple AAC 256 (.m4a)": the best audio the site offers, never YouTube's compressed DRC track. AAC is kept as is; other codecs become AAC 256 kbps with Apple's encoder, the Apple Music standard.
+- Each link is read once before the download starts. All previous format options remain available.
+- More reliable reading of yt-dlp output.
+]]></description>
+            <enclosure url="https://github.com/vviniciusbarreto/UniDownloader/releases/download/v1.1.0/UniDownloader-1.1.0-arm64.zip" length="98541648" type="application/octet-stream" sparkle:edSignature="fLJyXPubGXeg8NVTBadKER22Cn0HqNwF/FwkDQpLivKXXwRoLjaPSWulHy/OSrM0awptvi/7hbgPVyPa1ExvAQ=="/>
+        </item>
+        <item>
             <title>1.0.1</title>
             <pubDate>Mon, 31 Aug 2026 20:46:35 -0300</pubDate>
             <link>https://github.com/vviniciusbarreto/UniDownloader</link>
