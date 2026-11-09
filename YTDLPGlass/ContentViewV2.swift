@@ -96,14 +96,16 @@ private struct QuickOptionsBar: View {
                 } label: {
                     Text(downloads.videoCompatibility.rawValue)
                 }
+                .help("Best for Mac (MP4) keeps the highest resolution and, at that resolution, prefers H.264, then HEVC, then AV1. VP9 is converted to HEVC on the GPU and non-AAC audio to AAC 256 kbps, so the file opens in QuickTime, Finder and DaVinci Resolve.")
             } else {
                 Menu {
-                    ForEach(["Best available", "MP3 (.mp3)", "M4A (.m4a)", "Opus (.opus)", "WAV (.wav)"], id: \.self) { value in
+                    ForEach(DownloadViewModel.audioFormats, id: \.self) { value in
                         Button(value) { downloads.audioFormat = value }
                     }
                 } label: {
                     Text(downloads.audioFormat)
                 }
+                .help("Apple AAC 256 downloads the best audio the site offers (never YouTube's compressed DRC track). AAC is only moved into an M4A file; anything else becomes AAC 256 kbps CVBR at 44.1 kHz with Apple's encoder, the Apple Music standard.")
             }
 
             Menu {

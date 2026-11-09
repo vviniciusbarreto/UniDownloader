@@ -1,6 +1,6 @@
 # Bundled FFmpeg
 
-UniDownloader 1.0.1 includes native Apple Silicon builds of FFmpeg and FFprobe so users do not need a separate package manager installation.
+UniDownloader includes native Apple Silicon builds of FFmpeg and FFprobe so users do not need a separate package manager installation.
 
 - Version: FFmpeg 9.0.1
 - Architecture: arm64

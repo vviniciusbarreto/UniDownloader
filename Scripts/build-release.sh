@@ -2,8 +2,8 @@
 set -euo pipefail
 
 project_root="$(cd "$(dirname "$0")/.." && pwd)"
-version="${VERSION:-1.0.1}"
-build_number="${BUILD_NUMBER:-2}"
+version="${VERSION:-1.1.0}"
+build_number="${BUILD_NUMBER:-3}"
 derived="$project_root/build-release"
 app="$derived/Build/Products/Release/UniDownloader.app"
 release_dir="$project_root/ReleaseAssets/$version"

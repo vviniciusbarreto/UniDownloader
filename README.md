@@ -5,6 +5,7 @@ UniDownloader is a private, native macOS interface for [yt-dlp](https://github.c
 ## Highlights
 
 - Video and audio downloads, resolution selection, playlists, subtitles, metadata, cancellation, and a serial download queue.
+- Mac-first formats by default. Video: highest resolution as MP4; at the same resolution H.264 > HEVC > AV1; VP9-only sources are converted to HEVC with VideoToolbox (tag `hvc1`), and non-AAC audio becomes AAC 256 kbps. Audio: best track available (avoiding YouTube DRC), saved as M4A; AAC is copied, anything else becomes AAC 256 kbps CVBR 44.1 kHz with `aac_at`. All other formats remain available in the toolbar.
 - Persistent favorite folders plus a fixed **Save to** control for daily use.
 - A native menu-bar drop zone: drag a browser URL straight onto the UniDownloader arrow. The drop area opens automatically and starts the download with the current format and folder.
 - A first-launch welcome explaining privacy and workflow, and a Settings gear in the main window.

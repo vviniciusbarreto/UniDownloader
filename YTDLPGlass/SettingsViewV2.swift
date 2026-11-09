@@ -48,7 +48,7 @@ struct SettingsView: View {
             }
 
             Section("FFmpeg") {
-                Text("FFmpeg 9.0.1 and FFprobe are bundled for Apple Silicon. They merge high-quality YouTube audio/video, convert audio, embed metadata, and require no separate installation.")
+                Text("FFmpeg 9.0.1 and FFprobe are bundled for Apple Silicon. They merge high-quality YouTube audio/video, convert VP9 to HEVC and audio to AAC 256 kbps with Apple's encoders so files open on any Mac, embed metadata, and require no separate installation.")
                 HStack {
                     Text(downloads.ffmpegPath.isEmpty ? "Not configured" : downloads.ffmpegPath).lineLimit(1).truncationMode(.middle)
                     Spacer()
